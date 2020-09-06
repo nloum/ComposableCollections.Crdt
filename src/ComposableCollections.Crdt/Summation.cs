@@ -1,24 +1,38 @@
+using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 
 namespace ComposableCollections.Crdt
 {
-    public class Summation : ICrdt<int>
+    public class Summation<T> : ICrdt<T>
     {
         private object _lock = new object();
-        private int _state;
+        private readonly Func<T, T, T> _add;
 
-        public Summation(int initialState)
+        public T State { get; private set; }
+
+        public Summation(T initialState, Func<T, T, T> add)
         {
-            _state = initialState;
+            State = initialState;
+            _add = add;
         }
 
-        public void Write(IEnumerable<int> writes)
+        protected Summation(T initialState)
+        {
+        }
+        
+        protected virtual T Add(T t1, T t2)
+        {
+            return _add(t1, t2);
+        }
+        
+        public void Write(IEnumerable<T> writes)
         {
             lock (_lock)
             {
                 foreach (var write in writes)
                 {
-                    _state = _state + write;
+                    State = Add(State, write);
                 }
             }
         }

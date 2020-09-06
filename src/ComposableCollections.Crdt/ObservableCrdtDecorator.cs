@@ -8,7 +8,7 @@ namespace ComposableCollections.Crdt
     public class ObservableCrdtDecorator<TWrite> : IObservableCrdt<TWrite>
     {
         private readonly ICrdt<TWrite> _state;
-        private readonly Subject<TWrite> _writes;
+        private readonly Subject<TWrite> _writes = new Subject<TWrite>();
 
         public ObservableCrdtDecorator(ICrdt<TWrite> state)
         {
